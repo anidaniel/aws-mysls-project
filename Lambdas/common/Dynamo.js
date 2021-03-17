@@ -14,7 +14,6 @@ const Dynamo = {
         const data = await documentClient
             .get(params)
             .promise()
-
         if (!data || !data.Item)
     }
 }
