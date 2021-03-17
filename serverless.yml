@@ -7,7 +7,7 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
   profile: slsUser
-  region: region, 'us-east-1'
+  region: us-east-1
   environment:
     tableName: ${self:custom.tableName}
   iamRoleStatements:

@@ -9,7 +9,7 @@
       "runtime": "nodejs12.x",
       "lambdaHashingVersion": "20201221",
       "profile": "slsUser",
-      "region": "region, 'us-east-1'",
+      "region": "us-east-1",
       "environment": {
         "tableName": "player-points"
       },
@@ -197,7 +197,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z/getUser.zip"
+                "S3Key": "serverless/myslsproject/dev/1615972546104-2021-03-17T09:15:46.104Z/getUser.zip"
               },
               "Handler": "Lambdas/endpoints/getUser.handler",
               "Runtime": "nodejs12.x",
@@ -227,7 +227,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z/getPlayerScore.zip"
+                "S3Key": "serverless/myslsproject/dev/1615972546104-2021-03-17T09:15:46.104Z/getPlayerScore.zip"
               },
               "Handler": "Lambdas/endpoints/getPlayerScore.handler",
               "Runtime": "nodejs12.x",
@@ -512,7 +512,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1615972439348": {
+          "ApiGatewayDeployment1615972541195": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -896,7 +896,7 @@
       },
       "package": {
         "individually": true,
-        "artifactDirectoryName": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z"
+        "artifactDirectoryName": "serverless/myslsproject/dev/1615972546104-2021-03-17T09:15:46.104Z"
       },
       "custom": {
         "$ref": "$[\"service\"][\"custom\"]"
@@ -912,7 +912,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z",
+    "artifactDirectoryName": "serverless/myslsproject/dev/1615972546104-2021-03-17T09:15:46.104Z",
     "artifact": ""
   }
 }
