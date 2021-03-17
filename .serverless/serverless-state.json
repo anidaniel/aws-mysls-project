@@ -9,9 +9,21 @@
       "runtime": "nodejs12.x",
       "lambdaHashingVersion": "20201221",
       "profile": "slsUser",
+      "region": "region, 'us-east-1'",
+      "environment": {
+        "tableName": "player-points"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:*"
+          ],
+          "Resource": "*"
+        }
+      ],
       "stage": "dev",
       "variableSyntax": "\\${([^{}:]+?(?:\\(|:)(?:[^:{}][^{}]*?)?)}",
-      "region": "us-east-1",
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -92,6 +104,12 @@
               "LogGroupName": "/aws/lambda/myslsproject-dev-getUser"
             }
           },
+          "GetPlayerScoreLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/myslsproject-dev-getPlayerScore"
+            }
+          },
           "IamRoleLambdaExecution": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -148,6 +166,9 @@
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myslsproject-dev*:*:*"
                           }
                         ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
                       }
                     ]
                   }
@@ -176,13 +197,18 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/myslsproject/dev/1615961771546-2021-03-17T06:16:11.546Z/getUser.zip"
+                "S3Key": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z/getUser.zip"
               },
-              "Handler": "Lambdas/getUser.handler",
+              "Handler": "Lambdas/endpoints/getUser.handler",
               "Runtime": "nodejs12.x",
               "FunctionName": "myslsproject-dev-getUser",
               "MemorySize": 1024,
               "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "tableName": "player-points"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -194,14 +220,54 @@
               "GetUserLogGroup"
             ]
           },
-          "GetUserLambdaVersione849SSp0SlZwZfqJS3nJhnjTaWplgCrQiG2Um0LeE": {
+          "GetPlayerScoreLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z/getPlayerScore.zip"
+              },
+              "Handler": "Lambdas/endpoints/getPlayerScore.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "myslsproject-dev-getPlayerScore",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "tableName": "player-points"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetPlayerScoreLogGroup"
+            ]
+          },
+          "GetUserLambdaVersion5I9d28F03o04BVcTImKdfeOG5XIqOJzG1miewvPod4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetUserLambdaFunction"
               },
-              "CodeSha256": "56Wt+E2CtbBAwPAps/h4O+lPKyHUyiNpdEkkNHzjxQ4="
+              "CodeSha256": "H1Kke65chTtljawRTZ7Soro5glrss2Jz7xPAybl6Aec="
+            }
+          },
+          "GetPlayerScoreLambdaVersionOv0ACspcbh7ZdGUSnmjzCmDJIpwVssgVQRikC9ODyM": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetPlayerScoreLambdaFunction"
+              },
+              "CodeSha256": "6/a57eiSHk0DqRpBXDlSqfILcqtzYIN831dlJwVxYtg="
             }
           },
           "ApiGatewayRestApi": {
@@ -236,6 +302,33 @@
             "Properties": {
               "ParentId": {
                 "Ref": "ApiGatewayResourceGetDashuser"
+              },
+              "PathPart": "{ID}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetDashplayerDashscore": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "get-player-score",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetDashplayerDashscoreIdVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceGetDashplayerDashscore"
               },
               "PathPart": "{ID}",
               "RestApiId": {
@@ -288,6 +381,51 @@
               }
             }
           },
+          "ApiGatewayMethodGetDashplayerDashscoreIdVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".+\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetDashplayerDashscoreIdVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
           "ApiGatewayMethodGetDashuserIdVarGet": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
@@ -331,7 +469,50 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1615961769924": {
+          "ApiGatewayMethodGetDashplayerDashscoreIdVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetDashplayerDashscoreIdVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetPlayerScoreLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1615972439348": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -341,7 +522,9 @@
             },
             "DependsOn": [
               "ApiGatewayMethodGetDashuserIdVarOptions",
-              "ApiGatewayMethodGetDashuserIdVarGet"
+              "ApiGatewayMethodGetDashplayerDashscoreIdVarOptions",
+              "ApiGatewayMethodGetDashuserIdVarGet",
+              "ApiGatewayMethodGetDashplayerDashscoreIdVarGet"
             ]
           },
           "GetUserLambdaPermissionApiGateway": {
@@ -350,6 +533,43 @@
               "FunctionName": {
                 "Fn::GetAtt": [
                   "GetUserLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetPlayerScoreLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetPlayerScoreLambdaFunction",
                   "Arn"
                 ]
               },
@@ -416,7 +636,13 @@
           "GetUserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetUserLambdaVersione849SSp0SlZwZfqJS3nJhnjTaWplgCrQiG2Um0LeE"
+              "Ref": "GetUserLambdaVersion5I9d28F03o04BVcTImKdfeOG5XIqOJzG1miewvPod4"
+            }
+          },
+          "GetPlayerScoreLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetPlayerScoreLambdaVersionOv0ACspcbh7ZdGUSnmjzCmDJIpwVssgVQRikC9ODyM"
             }
           },
           "ServiceEndpoint": {
@@ -544,7 +770,7 @@
     "pluginsData": {},
     "functions": {
       "getUser": {
-        "handler": "Lambdas/getUser.handler",
+        "handler": "Lambdas/endpoints/getUser.handler",
         "events": [
           {
             "http": {
@@ -581,7 +807,47 @@
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "GetUserLambdaVersione849SSp0SlZwZfqJS3nJhnjTaWplgCrQiG2Um0LeE"
+        "versionLogicalId": "GetUserLambdaVersion5I9d28F03o04BVcTImKdfeOG5XIqOJzG1miewvPod4"
+      },
+      "getPlayerScore": {
+        "handler": "Lambdas/endpoints/getPlayerScore.handler",
+        "events": [
+          {
+            "http": {
+              "path": "get-player-score/{ID}",
+              "method": "get",
+              "cors": {
+                "origins": [
+                  "*"
+                ],
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "myslsproject-dev-getPlayerScore",
+        "package": {
+          "artifact": ".serverless/getPlayerScore.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "GetPlayerScoreLambdaVersionOv0ACspcbh7ZdGUSnmjzCmDJIpwVssgVQRikC9ODyM"
       }
     },
     "resources": {
@@ -630,7 +896,7 @@
       },
       "package": {
         "individually": true,
-        "artifactDirectoryName": "serverless/myslsproject/dev/1615961771546-2021-03-17T06:16:11.546Z"
+        "artifactDirectoryName": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z"
       },
       "custom": {
         "$ref": "$[\"service\"][\"custom\"]"
@@ -646,7 +912,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/myslsproject/dev/1615961771546-2021-03-17T06:16:11.546Z",
+    "artifactDirectoryName": "serverless/myslsproject/dev/1615972446365-2021-03-17T09:14:06.365Z",
     "artifact": ""
   }
 }
